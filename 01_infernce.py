@@ -24,3 +24,16 @@ cfg = init_config(overrides=[
     "experiment=dales",
     "ckpt_path=/home/daktar/superpoint_transformer/logs/train/runs/2024-01-05_11-00-33/checkpoints/epoch_279.ckpt"
 ])
+
+
+# Instantiate the datamodule
+datamodule = hydra.utils.instantiate(cfg.datamodule)
+datamodule.prepare_data()
+datamodule.setup()
+
+# Instantiate the model
+model = hydra.utils.instantiate(cfg.model)
+
+# Load pretrained weights from a checkpoint file
+model = model.load_from_checkpoint(cfg.ckpt_path, net=model.net, criterion=model.criterion)
+model = model.eval().cuda()
